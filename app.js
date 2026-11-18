@@ -372,6 +372,7 @@
       var b = el('button', { class: 'c-thumb', type: 'button', 'aria-label': v.title + ' を再生' }, [
         el('img', { src: 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg', alt: '', loading: 'lazy' }),
         el('span', { class: 'c-play', 'aria-hidden': 'true' }),
+        v.title ? el('span', { class: 'c-title', text: v.title }) : null,
       ]);
       b.addEventListener('click', function () {
         stopAuto();
