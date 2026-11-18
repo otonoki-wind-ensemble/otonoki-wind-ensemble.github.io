@@ -14,7 +14,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https: data:; frame-src https://www.youtube-nocookie.com; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'self'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" href="images/favicon.png">
-<link rel="stylesheet" href="style.css?v=20261119b">
+<link rel="stylesheet" href="style.css?v=20261119c">
 </head>
 <body>
 
@@ -29,6 +29,7 @@
       <a href="#recruit">団員募集</a>
       <a href="#concerts">演奏会</a>
       <a href="#faq">よくある質問</a>
+      <a href="#contact">お問い合わせ</a>
       <a class="btn btn-sm cta-link" href="#recruit" data-form-link>見学を申し込む</a>
     </nav>
   </div>
@@ -65,7 +66,7 @@
     <h2 class="sec-title"><span class="en">About</span>音ノ樹について</h2>
     <p class="intro" data-info="紹介文"></p>
 
-    <h3 class="sub-title">大切にしていること</h3>
+    <h3 class="sub-title" data-label="理念">大切にしていること</h3>
     <p class="philosophy" data-info="理念"></p>
     <div class="values">
       <article class="value"><span class="vnum">01</span><h4 data-info="方針1 見出し"></h4><p data-info="方針1 本文"></p></article>
@@ -73,27 +74,10 @@
       <article class="value"><span class="vnum">03</span><h4 data-info="方針3 見出し"></h4><p data-info="方針3 本文"></p></article>
     </div>
 
-    <h3 class="sub-title">主な活動</h3>
+    <h3 class="sub-title" data-label="主な活動">主な活動</h3>
     <ul class="checks" data-info-list="主な活動"></ul>
 
-    <div class="two-col">
-      <div class="info-card">
-        <h3 class="sub-title">練習</h3>
-        <dl class="dl">
-          <dt>日時</dt><dd data-info="練習日時"></dd>
-          <dt>場所</dt><dd data-info="練習場所"></dd>
-          <dt>備考</dt><dd data-info="練習の備考"></dd>
-        </dl>
-      </div>
-      <div class="info-card">
-        <h3 class="sub-title">費用</h3>
-        <dl class="dl">
-          <dt>入団費</dt><dd data-info="入団費"></dd>
-          <dt>団費</dt><dd data-info="団費|月額団費"></dd>
-          <dt>演奏会費</dt><dd data-info="演奏会費"></dd>
-        </dl>
-      </div>
-    </div>
+    <div class="two-col" id="infoGroups"></div>
   </div>
 </section>
 
@@ -131,10 +115,10 @@
     </div>
     <p class="scroll-hint" id="partsHint" hidden>← 表は横にスクロールできます →</p>
 
-    <h3 class="sub-title">こんな方を歓迎します</h3>
+    <h3 class="sub-title" data-label="歓迎する方">こんな方を歓迎します</h3>
     <ul class="checks" data-info-list="歓迎する方"></ul>
 
-    <h3 class="sub-title">見学の流れ</h3>
+    <h3 class="sub-title" data-label="見学の流れ">見学の流れ</h3>
     <ol class="steps" data-info-list="見学の流れ"></ol>
 
     <div class="cta-box">
@@ -151,7 +135,7 @@
     <div id="nextConcert">
     </div>
     <div id="upcoming"></div>
-    <h3 class="sub-title">これまでの本番</h3>
+    <h3 class="sub-title">過去の演奏会</h3>
     <div class="past" id="pastList"></div>
     <p class="center" id="ytLine" hidden><a class="btn btn-outline" id="ytLink" href="#" target="_blank" rel="noopener">YouTubeで演奏動画を見る</a></p>
   </div>
@@ -177,6 +161,15 @@
   </div>
 </section>
 
+<!-- お問い合わせ -->
+<section class="data sec sec-tint" id="contact" hidden>
+  <div class="sec-in">
+    <h2 class="sec-title"><span class="en">Contact</span>お問い合わせ</h2>
+    <p class="contact-text" data-info="お問い合わせの案内"></p>
+    <p class="contact-mail"><a id="mailLink" href="#"></a></p>
+  </div>
+</section>
+
 </main>
 
 <footer class="footer">
@@ -186,7 +179,7 @@
   <p class="f-copy">© 楽団 音ノ樹</p>
 </footer>
 
-<script src="config.js?v=20261119a"></script>
-<script src="app.js?v=20261119a"></script>
+<script src="config.js?v=20261119c"></script>
+<script src="app.js?v=20261119c"></script>
 </body>
 </html>

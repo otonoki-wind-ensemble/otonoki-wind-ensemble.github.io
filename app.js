@@ -116,7 +116,7 @@
 
   /* ---------- 表示 ---------- */
   function render(d) {
-    var tasks = [renderInfo, renderLinks, renderHero, renderStats, renderHistory, renderVoices,
+    var tasks = [renderInfo, renderInfoGroups, renderContact, renderLinks, renderHero, renderStats, renderHistory, renderVoices,
       renderParts, renderNext, renderPast, renderVideo, renderGallery, renderFaq, renderFooter];
     tasks.forEach(function (fn) {
       try { fn(d); } catch (e) { if (window.console) console.warn('音ノ樹HP: 表示エラー', fn.name, e); }
@@ -126,12 +126,19 @@
   // 基本情報：data-info="項目名" の中身をシートの値で置き換える（空ならHTMLの初期値のまま）
   function renderInfo(d) {
     var info = d.info || {};
+    var labels = d.labels || {};
     // data-info="団費|月額団費" のように「|」区切りで別名も書ける（先に見つかった方を使う）
     function pick(keys) {
       var list = keys.split('|');
       for (var i = 0; i < list.length; i++) { if (info[list[i]]) return info[list[i]]; }
       return '';
     }
+    // 見出し：シートの「項目」をそのまま表示。中身が空なら見出しごと隠す
+    document.querySelectorAll('[data-label]').forEach(function (node) {
+      var id = node.getAttribute('data-label');
+      if (labels[id]) node.textContent = labels[id];
+      if (d.labels && !info[id]) node.hidden = true;
+    });
     document.querySelectorAll('[data-info]').forEach(function (node) {
       var v = pick(node.getAttribute('data-info'));
       if (!v) { node.hidden = true; return; }
@@ -143,6 +150,33 @@
       clear(node);
       items.forEach(function (t) { node.appendChild(el('li', { text: t })); });
     });
+  }
+
+  // 「練習」「費用」などの枠：シートの「区分」ごとに、「項目：内容」を上から順に並べる
+  function renderInfoGroups(d) {
+    var box = $('infoGroups');
+    clear(box);
+    (d.infoGroups || []).forEach(function (g) {
+      var dl = el('dl', { class: 'dl' });
+      g.rows.forEach(function (r) {
+        var dd = el('dd');
+        setMultiline(dd, r.value);
+        dl.appendChild(el('dt', { text: r.label }));
+        dl.appendChild(dd);
+      });
+      box.appendChild(el('div', { class: 'info-card' }, [el('h3', { class: 'sub-title', text: g.title }), dl]));
+    });
+    box.hidden = !box.children.length;
+  }
+
+  // お問い合わせ：メールアドレスがあるときだけ表示
+  function renderContact(d) {
+    var mail = (d.info || {})['メールアドレス'];
+    if (!mail || !/^[^\s@<>"'()]+@[^\s@<>"'()]+\.[^\s@<>"'()]+$/.test(mail)) return;
+    var a = $('mailLink');
+    a.textContent = mail;
+    a.setAttribute('href', 'mailto:' + mail);
+    $('contact').hidden = false;
   }
 
   // 見学フォーム・メール
