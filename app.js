@@ -124,8 +124,7 @@
     document.querySelectorAll('[data-info]').forEach(function (node) {
       var v = info[node.getAttribute('data-info')];
       if (!v) return;
-      if (node.hasAttribute('data-multiline')) setMultiline(node, v);
-      else node.textContent = v;
+      setMultiline(node, v); // シートの改行をそのまま反映
     });
     document.querySelectorAll('[data-info-list]').forEach(function (node) {
       var items = lines(info[node.getAttribute('data-info-list')]);
@@ -145,13 +144,6 @@
         a.setAttribute('target', '_blank');
         a.setAttribute('rel', 'noopener');
       });
-    }
-    var mail = info['メールアドレス'];
-    if (mail && /^[^\s@<>"']+@[^\s@<>"']+$/.test(mail)) {
-      var a = $('mailLink');
-      a.textContent = mail;
-      a.setAttribute('href', 'mailto:' + mail);
-      $('mailLine').hidden = false;
     }
     var yt = safeUrl(info['YouTube URL']);
     if (yt) { $('ytLink').setAttribute('href', yt); $('ytLine').hidden = false; }
@@ -380,13 +372,27 @@
     });
   }
 
+  // SNSリンク：images/sns-x.png などがあればアイコン、なければ文字で表示
+  var SNS = [
+    ['X', 'X URL', 'sns-x.png'],
+    ['Instagram', 'Instagram URL', 'sns-instagram.png'],
+    ['YouTube', 'YouTube URL', 'sns-youtube.png'],
+  ];
+  function snsInto(box, info) {
+    clear(box);
+    SNS.forEach(function (s) {
+      var u = safeUrl(info[s[1]]);
+      if (!u) return;
+      var img = el('img', { src: 'images/' + s[2], alt: s[0], width: '24', height: '24' });
+      var a = el('a', { href: u, target: '_blank', rel: 'noopener', 'aria-label': s[0] + '（新しいタブで開く）', title: s[0] }, [img]);
+      img.addEventListener('error', function () { a.textContent = s[0]; a.classList.add('text'); });
+      box.appendChild(a);
+    });
+  }
+
   function renderFooter(d) {
     var info = d.info || {};
-    var sns = $('sns');
-    clear(sns);
-    [['X', info['X URL']], ['Instagram', info['Instagram URL']], ['YouTube', info['YouTube URL']]].forEach(function (s) {
-      var u = safeUrl(s[1]);
-      if (u) sns.appendChild(el('a', { href: u, target: '_blank', rel: 'noopener', text: s[0] }));
-    });
+    snsInto($('sns'), info);
+    snsInto($('navSns'), info);
   }
 })();

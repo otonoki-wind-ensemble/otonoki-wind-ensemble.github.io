@@ -43,9 +43,16 @@ a { color: var(--green); }
 .menu { display: flex; gap: 22px; align-items: center; }
 .menu a { color: var(--ink); text-decoration: none; font-size: .92rem; }
 .menu a:hover { color: var(--green); }
+.nav-sns { display: flex; gap: 6px; align-items: center; margin-left: 18px; }
+.nav-sns a, .f-sns a { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.nav-sns a { width: 36px; height: 36px; border-radius: 50%; }
+.nav-sns a:hover { background: var(--green-l); }
+.nav-sns img { width: 22px; height: 22px; object-fit: contain; }
+.nav-sns a.text { width: auto; padding: 2px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: .8rem; color: var(--ink); }
 .menu-btn { display: none; background: none; border: 0; width: 44px; height: 44px; padding: 10px; cursor: pointer; }
 .menu-btn span { display: block; height: 2px; background: var(--ink); margin: 6px 0; transition: .2s; }
 @media (max-width: 860px) {
+  .nav-sns { margin-left: auto; margin-right: 4px; gap: 2px; }
   .menu-btn { display: block; }
   .menu {
     position: absolute; top: var(--navh); left: 0; right: 0;
@@ -104,9 +111,9 @@ a { color: var(--green); }
 .hero-next .nm { font-size: 1.15rem; font-weight: bold; margin: 2px 0; }
 .hero-next .dt { margin: 0; font-size: .92rem; }
 .hero-next a { font-size: .85rem; }
-.hero-parts { margin: 16px auto 0; max-width: 560px; }
+.hero-parts { margin: 16px auto 0; max-width: 520px; text-align: left; }
 .hero-parts .lbl { font-size: .8rem; opacity: .9; margin: 0 0 6px; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
 .chip { background: rgba(255, 255, 255, .18); border: 1px solid rgba(255, 255, 255, .6); color: #fff; border-radius: 999px; padding: 3px 14px; font-size: .88rem; text-decoration: none; }
 .chip.hot { background: var(--hot); border-color: var(--hot); }
 
@@ -241,7 +248,7 @@ a { color: var(--green); }
 .past details.event { border-left-color: var(--event); }
 .past summary { cursor: pointer; list-style: none; padding: 12px 14px; display: flex; gap: 14px; align-items: baseline; background: #fff; }
 .past summary::-webkit-details-marker { display: none; }
-.past summary::after { content: "＋"; margin-left: auto; color: var(--green); font-weight: bold; }
+.past summary::after { content: "＋"; margin-left: auto; color: var(--green); font-weight: bold; white-space: nowrap; flex: 0 0 auto; }
 .past details[open] summary { position: sticky; top: var(--navh); z-index: 5; background: var(--ivory); box-shadow: 0 1px 0 var(--line); }
 .past details[open] summary::after { content: "閉じる －"; font-size: .82rem; }
 .past .pdate { font-size: .85rem; color: #777; min-width: 6.5em; }
@@ -251,6 +258,7 @@ a { color: var(--green); }
 .past .pbody { padding: 6px 16px 18px; }
 .past .meta { font-size: .88rem; color: #666; margin: 0 0 .8em; }
 .past .c-body { grid-template-columns: 160px 1fr; }
+.past .c-body.noflyer { grid-template-columns: 1fr; }
 @media (max-width: 640px) { .past .c-body { grid-template-columns: 1fr; } .past .c-body .flyer { max-width: 180px; margin: 0; } }
 
 /* ---------- 写真 ---------- */
@@ -275,8 +283,10 @@ a { color: var(--green); }
 .f-logo { width: 48px; height: auto; opacity: .9; }
 .f-name { font-weight: bold; letter-spacing: .1em; margin: 6px 0 14px; }
 .f-sns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 0 0 18px; }
-.f-sns a { color: #fff; text-decoration: none; border: 1px solid rgba(255, 255, 255, .5); border-radius: 999px; padding: 4px 16px; font-size: .85rem; }
-.f-sns a:hover { background: rgba(255, 255, 255, .12); }
+.f-sns a { width: 44px; height: 44px; border-radius: 50%; background: #fff; }
+.f-sns a:hover { opacity: .85; }
+.f-sns img { width: 24px; height: 24px; object-fit: contain; }
+.f-sns a.text { width: auto; height: auto; background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, .5); border-radius: 999px; padding: 4px 16px; font-size: .85rem; }
 .f-copy { font-size: .8rem; margin: 0; opacity: .8; }
 .f-updated { font-size: .72rem; margin: 4px 0 0; opacity: .55; }
 .load-error { background: #fff4e5; border: 1px solid #f0c48a; color: #7a4a00; border-radius: 8px; padding: 10px 14px; font-size: .88rem; }
