@@ -34,15 +34,16 @@
   </div>
 </header>
 
-<main>
+<main id="main" class="is-loading">
 
 <!-- トップ -->
 <section class="hero" id="top">
   <div class="hero-in">
     <img class="hero-mark" src="images/mark-white.png" alt="" width="120" height="122">
-    <h1 data-info="キャッチコピー">一緒に育てる音楽の樹</h1>
-    <p class="lead" data-info="リード文">楽団 音ノ樹は、東京都練馬区を中心に活動するアマチュア吹奏楽団です。月2回、土曜日の午後に集まり、楽しく、そして真剣に音楽をつくっています。</p>
-    <div class="hero-btns">
+    <div class="status" id="status" role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span><span id="statusText">読み込み中です…</span></div>
+    <h1 class="data" data-info="キャッチコピー"></h1>
+    <p class="lead data" data-info="リード文"></p>
+    <div class="hero-btns data">
       <a class="btn btn-light" href="#recruit" data-form-link>見学を申し込む</a>
       <a class="btn btn-ghost" href="#concerts">演奏会情報</a>
     </div>
@@ -52,48 +53,44 @@
 </section>
 
 <!-- 数字 -->
-<section class="stats" id="stats" aria-label="音ノ樹の数字">
+<section class="stats data" id="stats" aria-label="音ノ樹の数字">
   <div class="stat"><span class="num">2020</span><span class="unit">年</span><span class="cap">Webを通じて結成</span></div>
   <div class="stat"><span class="num" id="statConcerts">–</span><span class="unit">回</span><span class="cap">これまでの本番</span></div>
   <div class="stat"><span class="num" id="statAudience">–</span><span class="unit">名</span><span class="cap">演奏会の最多来場者</span></div>
 </section>
 
 <!-- 音ノ樹について -->
-<section class="sec" id="about">
+<section class="data sec" id="about">
   <div class="sec-in">
     <h2 class="sec-title"><span class="en">About</span>音ノ樹について</h2>
-    <p class="intro" data-info="紹介文" data-multiline>2020年にWebを通じて結成されたアマチュア吹奏楽団です。「一緒に育てる音楽の樹」をモットーに活動しています。<br>出身、年齢、経験年数も様々なメンバーですが、楽しく、そして真剣に、団員一丸となって音楽づくりに邁進しています。<br>メンバーは20〜30代が中心で、和やかな雰囲気を大切にしています。</p>
+    <p class="intro" data-info="紹介文"></p>
 
     <h3 class="sub-title">大切にしていること</h3>
-    <p class="philosophy" data-info="理念">音ノ樹は、「一緒に育てる音楽の樹」のもと、団員や楽団に関わるすべての人の力で、音ノ樹でしかできない音楽をつくることを目指しています。</p>
+    <p class="philosophy" data-info="理念"></p>
     <div class="values">
-      <article class="value"><span class="vnum">01</span><h4 data-info="方針1 見出し">楽しく、そして真剣に</h4><p data-info="方針1 本文">「楽しかった」だけでなく、「良い汗を流した」「音楽が深まった」と感じられる時間にしたいと考えています。どこかで聴いた演奏をなぞるのではなく、作品と誠実に向き合い、自分たちの音楽を考え続けます。</p></article>
-      <article class="value"><span class="vnum">02</span><h4 data-info="方針2 見出し">安心して音を出せる場所</h4><p data-info="方針2 本文">年齢や経験、楽器の枠を越えて、気軽に相談し合える雰囲気があります。指揮者と奏者も上下ではなく、同じ目線で音楽をつくります。</p></article>
-      <article class="value"><span class="vnum">03</span><h4 data-info="方針3 見出し">みんなでつくる楽団</h4><p data-info="方針3 本文">団員は全員、いずれかの係に入り、楽団の運営に関わっています。演奏する曲も、有志の選曲委員と指揮者が一緒に、「奏者とお客様がともに楽しめるか」「団として挑戦できるか」を考えて決めています。</p></article>
+      <article class="value"><span class="vnum">01</span><h4 data-info="方針1 見出し"></h4><p data-info="方針1 本文"></p></article>
+      <article class="value"><span class="vnum">02</span><h4 data-info="方針2 見出し"></h4><p data-info="方針2 本文"></p></article>
+      <article class="value"><span class="vnum">03</span><h4 data-info="方針3 見出し"></h4><p data-info="方針3 本文"></p></article>
     </div>
 
     <h3 class="sub-title">主な活動</h3>
-    <ul class="checks" data-info-list="主な活動">
-      <li>定期演奏会（年1回）</li>
-      <li>目黒本町社会教育館「館まつり」への出演（毎年11月）</li>
-      <li>有志メンバーによるアンサンブル活動（福祉施設での訪問演奏など）</li>
-    </ul>
+    <ul class="checks" data-info-list="主な活動"></ul>
 
     <div class="two-col">
       <div class="info-card">
         <h3 class="sub-title">練習</h3>
         <dl class="dl">
-          <dt>日時</dt><dd data-info="練習日時">第2・第4土曜日 13:00〜17:00</dd>
-          <dt>場所</dt><dd data-info="練習場所">練馬区を中心とした都内の公共施設（練習ごとに変わります。詳細は見学のお申し込み後にご案内します）</dd>
-          <dt>備考</dt><dd data-info="練習の備考">会場により練習時間が前後することがあります</dd>
+          <dt>日時</dt><dd data-info="練習日時"></dd>
+          <dt>場所</dt><dd data-info="練習場所"></dd>
+          <dt>備考</dt><dd data-info="練習の備考"></dd>
         </dl>
       </div>
       <div class="info-card">
         <h3 class="sub-title">費用</h3>
         <dl class="dl">
-          <dt>入団費</dt><dd data-info="入団費">なし</dd>
-          <dt>団費</dt><dd data-info="月額団費">2,000円</dd>
-          <dt>演奏会費</dt><dd data-info="演奏会費">演奏会ごとに別途（15,000〜30,000円程度）</dd>
+          <dt>入団費</dt><dd data-info="入団費"></dd>
+          <dt>団費</dt><dd data-info="団費|月額団費"></dd>
+          <dt>演奏会費</dt><dd data-info="演奏会費"></dd>
         </dl>
       </div>
     </div>
@@ -104,23 +101,15 @@
 <section class="sec sec-dark" id="video" hidden>
   <div class="sec-in">
     <h2 class="sec-title light"><span class="en">Movie</span>演奏動画</h2>
-    <div class="video-box" id="videoBox"></div>
+    <div class="carousel" id="videoBox" aria-roledescription="carousel" aria-label="演奏動画"></div>
   </div>
 </section>
 
 <!-- あゆみ -->
-<section class="sec sec-tint" id="history">
+<section class="data sec sec-tint" id="history">
   <div class="sec-in">
     <h2 class="sec-title"><span class="en">History</span>音ノ樹のあゆみ</h2>
-    <ol class="timeline" id="timeline">
-      <li class="event"><span class="when">2020年</span><span class="ttl">Webを通じて結成</span></li>
-      <li class="concert"><span class="when">2023年3月</span><span class="ttl">第1回不定期演奏会</span><span class="sub">大田区民ホール・アプリコ 小ホール　来場 71名</span></li>
-      <li class="concert"><span class="when">2024年5月</span><span class="ttl">第2回不定期演奏会</span><span class="sub">国立オリンピック記念青少年総合センター カルチャー棟 小ホール　来場 154名</span></li>
-      <li class="fest"><span class="when">2024年11月</span><span class="ttl">第38回館まつり</span><span class="sub">目黒本町社会教育館</span></li>
-      <li class="concert"><span class="when">2025年4月</span><span class="ttl">第3回定期演奏会</span><span class="sub">曳舟文化センター 劇場ホール　来場 394名</span></li>
-      <li class="concert"><span class="when">2026年5月</span><span class="ttl">第4回定期演奏会</span><span class="sub">タワーホール船堀 大ホール　来場 462名</span></li>
-      <li class="concert"><span class="when">2027年4月</span><span class="ttl">第5回定期演奏会<span class="plan">予定</span></span><span class="sub">タワーホール船堀 大ホール</span></li>
-    </ol>
+    <ol class="timeline" id="timeline"></ol>
   </div>
 </section>
 
@@ -133,29 +122,20 @@
 </section>
 
 <!-- 団員募集 -->
-<section class="sec sec-tint" id="recruit">
+<section class="data sec sec-tint" id="recruit">
   <div class="sec-in">
     <h2 class="sec-title"><span class="en">Join us</span>団員募集・見学</h2>
 
     <h3 class="sub-title">募集状況</h3>
     <div class="table-wrap" id="partsWrap">
-      <p class="muted" id="partsFallback">最新の募集状況を読み込み中です…</p>
     </div>
     <p class="scroll-hint" id="partsHint" hidden>← 表は横にスクロールできます →</p>
 
     <h3 class="sub-title">こんな方を歓迎します</h3>
-    <ul class="checks" data-info-list="歓迎する方">
-      <li>楽器経験のある方（ブランクの長さは問いません。十年前後のブランクを経て入団したメンバーも数多くいます）</li>
-      <li>楽しさと真剣さの両方を大切にしたい方</li>
-      <li>和やかな雰囲気の中で、一緒に音楽をつくりたい方</li>
-    </ul>
+    <ul class="checks" data-info-list="歓迎する方"></ul>
 
     <h3 class="sub-title">見学の流れ</h3>
-    <ol class="steps" data-info-list="見学の流れ">
-      <li>下のボタンのフォームからお申し込みください</li>
-      <li>担当者から、練習日程と場所をメールでご案内します</li>
-      <li>練習を見学（2回まで可能）。入団はその後ゆっくりご判断ください</li>
-    </ol>
+    <ol class="steps" data-info-list="見学の流れ"></ol>
 
     <div class="cta-box">
       <a class="btn btn-big" id="formBtn" href="#recruit" target="_blank" rel="noopener">見学を申し込む</a>
@@ -164,19 +144,15 @@
 </section>
 
 <!-- 演奏会 -->
-<section class="sec" id="concerts">
+<section class="data sec" id="concerts">
   <div class="sec-in">
     <h2 class="sec-title"><span class="en">Concerts</span>演奏会・出演情報</h2>
     <h3 class="sub-title">次回の演奏会</h3>
     <div id="nextConcert">
-      <div class="concert-card">
-        <h4 class="c-name">第5回定期演奏会</h4>
-        <dl class="dl"><dt>日時</dt><dd>2027年4月17日（土）午後</dd><dt>会場</dt><dd>タワーホール船堀 大ホール</dd></dl>
-      </div>
     </div>
     <div id="upcoming"></div>
     <h3 class="sub-title">これまでの本番</h3>
-    <div class="past" id="pastList"><p class="muted">読み込み中です…</p></div>
+    <div class="past" id="pastList"></div>
     <p class="center" id="ytLine" hidden><a class="btn btn-outline" id="ytLink" href="#" target="_blank" rel="noopener">YouTubeで演奏動画を見る</a></p>
   </div>
 </section>
@@ -190,14 +166,10 @@
 </section>
 
 <!-- FAQ -->
-<section class="sec" id="faq">
+<section class="data sec" id="faq">
   <div class="sec-in">
     <h2 class="sec-title"><span class="en">FAQ</span>よくある質問</h2>
     <div class="faq" id="faqList">
-      <details><summary>何歳から入団できますか？</summary><p>高校を卒業された方からご参加いただけます。</p></details>
-      <details><summary>ブランクがあっても参加できますか？</summary><p>はい。ブランクの長さは問いません。十年前後のブランクを経て入団したメンバーも数多くいます。</p></details>
-      <details><summary>初心者でも入団できますか？</summary><p>練習時間内に、楽器ごとの個別レッスンの時間はありません。別にレッスンを受けるなどして、合奏に参加できる程度に演奏できるようになってからのご参加をお願いしています。</p></details>
-      <details><summary>見学には何を持っていけばいいですか？</summary><p>楽器とチューナーをお持ちください。譜面台は原則不要です。必要な場合は、担当者からご連絡します。</p></details>
     </div>
     <div class="cta-box">
       <a class="btn btn-big" href="#recruit" data-form-link target="_blank" rel="noopener">見学を申し込む</a>
@@ -212,7 +184,6 @@
   <p class="f-name">楽団 音ノ樹</p>
   <p class="f-sns" id="sns"></p>
   <p class="f-copy">© 楽団 音ノ樹</p>
-  <p class="f-updated" id="updated"></p>
 </footer>
 
 <script src="config.js"></script>

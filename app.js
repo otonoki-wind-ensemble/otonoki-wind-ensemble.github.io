@@ -83,7 +83,8 @@
   }
 
   /* ---------- 読み込み ---------- */
-  if (!CONFIG.dataUrl) { showFallback('データの読み込み先（config.js）が未設定です'); return; }
+  var MAIN = $('main');
+  if (!CONFIG.dataUrl) { showError('データの読み込み先（config.js）が未設定です。'); return; }
 
   var url = CONFIG.dataUrl + (CONFIG.dataUrl.indexOf('?') < 0 ? '?' : '&') + 'format=json';
   var ctrl = ('AbortController' in window) ? new AbortController() : null;
@@ -95,18 +96,22 @@
       clearTimeout(timer);
       if (!data || !data.ok) throw new Error('data not ok');
       render(data);
+      MAIN.classList.remove('is-loading');
+      $('status').hidden = true;
     })
     .catch(function (err) {
       clearTimeout(timer);
       if (window.console) console.warn('音ノ樹HP: 読み込み失敗', err);
-      showFallback('最新の情報を読み込めませんでした。時間をおいて再度お試しください。');
+      showError('情報を読み込めませんでした。時間をおいて、ページを再読み込みしてください。');
     });
 
-  function showFallback(msg) {
-    var pf = $('partsFallback');
-    if (pf) { pf.textContent = msg; pf.className = 'load-error'; }
-    var pl = $('pastList');
-    if (pl) { clear(pl); pl.appendChild(el('p', { class: 'load-error', text: msg })); }
+  // 読み込めなかったときは、メッセージだけを出す（古い情報を出さない）
+  function showError(msg) {
+    MAIN.classList.remove('is-loading');
+    MAIN.classList.add('is-error');
+    var st = $('status');
+    st.classList.add('error');
+    $('statusText').textContent = msg;
   }
 
   /* ---------- 表示 ---------- */
@@ -121,13 +126,19 @@
   // 基本情報：data-info="項目名" の中身をシートの値で置き換える（空ならHTMLの初期値のまま）
   function renderInfo(d) {
     var info = d.info || {};
+    // data-info="団費|月額団費" のように「|」区切りで別名も書ける（先に見つかった方を使う）
+    function pick(keys) {
+      var list = keys.split('|');
+      for (var i = 0; i < list.length; i++) { if (info[list[i]]) return info[list[i]]; }
+      return '';
+    }
     document.querySelectorAll('[data-info]').forEach(function (node) {
-      var v = info[node.getAttribute('data-info')];
-      if (!v) return;
+      var v = pick(node.getAttribute('data-info'));
+      if (!v) { node.hidden = true; return; }
       setMultiline(node, v); // シートの改行をそのまま反映
     });
     document.querySelectorAll('[data-info-list]').forEach(function (node) {
-      var items = lines(info[node.getAttribute('data-info-list')]);
+      var items = lines(pick(node.getAttribute('data-info-list')));
       if (!items.length) return;
       clear(node);
       items.forEach(function (t) { node.appendChild(el('li', { text: t })); });
@@ -332,17 +343,100 @@
     });
   }
 
+  // トップの演奏動画：複数あれば横に切り替えるカルーセル（自動で順番に切り替わる）
   function renderVideo(d) {
-    var v = d.topVideo;
-    if (!v || !/^[A-Za-z0-9_-]{11}$/.test(v.id)) return;
-    var src = 'https://www.youtube-nocookie.com/embed/' + v.id + (v.start ? '?start=' + parseInt(v.start, 10) : '');
+    var list = (d.topVideos && d.topVideos.length ? d.topVideos : (d.topVideo ? [d.topVideo] : []))
+      .filter(function (v) { return v && /^[A-Za-z0-9_-]{11}$/.test(v.id); });
+    if (!list.length) return;
     var box = $('videoBox');
     clear(box);
-    box.appendChild(el('div', { class: 'frame' }, [el('iframe', {
-      src: src, title: v.title, loading: 'lazy', allowfullscreen: '',
-      allow: 'accelerometer; encrypted-media; gyroscope; picture-in-picture',
-    })]));
-    box.appendChild(el('p', { class: 'caption', text: v.title }));
+    var track = el('div', { class: 'c-track' });
+    var dots = el('div', { class: 'c-dots' });
+    var current = 0, timer = null, stopped = false;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    list.forEach(function (v, i) {
+      var slide = el('div', { class: 'c-slide', role: 'group', 'aria-label': (i + 1) + ' / ' + list.length });
+      slide.appendChild(thumb(v, slide));
+      track.appendChild(slide);
+      if (list.length > 1) {
+        var dot = el('button', { class: 'c-dot', type: 'button', 'aria-label': (i + 1) + '本目の動画へ' });
+        dot.addEventListener('click', function () { stopAuto(); go(i); });
+        dots.appendChild(dot);
+      }
+    });
+    box.appendChild(track);
+
+    // サムネイル（押すと再生）。ページを軽くするため、最初は画像だけ出す
+    function thumb(v, slide) {
+      var b = el('button', { class: 'c-thumb', type: 'button', 'aria-label': v.title + ' を再生' }, [
+        el('img', { src: 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg', alt: '', loading: 'lazy' }),
+        el('span', { class: 'c-play', 'aria-hidden': 'true' }),
+      ]);
+      b.addEventListener('click', function () {
+        stopAuto();
+        var src = 'https://www.youtube-nocookie.com/embed/' + v.id + '?autoplay=1' + (v.start ? '&start=' + parseInt(v.start, 10) : '');
+        var frame = el('div', { class: 'frame' }, [el('iframe', {
+          src: src, title: v.title, allowfullscreen: '',
+          allow: 'autoplay; accelerometer; encrypted-media; gyroscope; picture-in-picture',
+        })]);
+        frame.dataset.id = v.id;
+        slide.replaceChild(frame, b);
+        slide._video = v;
+      });
+      return b;
+    }
+
+    // 再生中の動画を、別の動画に切り替えたら止める（サムネイルに戻す）
+    function resetOthers(keep) {
+      Array.prototype.forEach.call(track.children, function (s, i) {
+        if (i !== keep && s._video) {
+          var v = s._video; s._video = null;
+          clear(s); s.appendChild(thumb(v, s));
+        }
+      });
+    }
+
+    function go(i) {
+      current = (i + list.length) % list.length;
+      track.scrollTo({ left: track.clientWidth * current, behavior: reduce ? 'auto' : 'smooth' });
+      mark();
+    }
+    function mark() {
+      Array.prototype.forEach.call(dots.children, function (dt, i) { dt.classList.toggle('on', i === current); });
+      resetOthers(current);
+    }
+    var scrollTimer;
+    track.addEventListener('scroll', function () {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function () {
+        var i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+        if (i !== current) { current = i; mark(); }
+      }, 120);
+    });
+
+    function startAuto() {
+      if (stopped || reduce || list.length < 2 || timer) return;
+      timer = setInterval(function () { go(current + 1); }, 6000);
+    }
+    function pauseAuto() { clearInterval(timer); timer = null; }
+    function stopAuto() { stopped = true; pauseAuto(); }
+
+    if (list.length > 1) {
+      var prev = el('button', { class: 'c-nav c-prev', type: 'button', 'aria-label': '前の動画' }, ['‹']);
+      var next = el('button', { class: 'c-nav c-next', type: 'button', 'aria-label': '次の動画' }, ['›']);
+      prev.addEventListener('click', function () { stopAuto(); go(current - 1); });
+      next.addEventListener('click', function () { stopAuto(); go(current + 1); });
+      box.appendChild(prev);
+      box.appendChild(next);
+      box.appendChild(dots);
+      // 指やマウスが乗っている間は止める
+      box.addEventListener('mouseenter', pauseAuto);
+      box.addEventListener('mouseleave', startAuto);
+      track.addEventListener('touchstart', stopAuto, { passive: true });
+      mark();
+      startAuto();
+    }
     $('video').hidden = false;
   }
 
