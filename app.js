@@ -169,13 +169,23 @@
     box.hidden = !box.children.length;
   }
 
-  // お問い合わせ：メールアドレスがあるときだけ表示
+  // お問い合わせ：フォームのURLがあればフォームへ。なければメール（アドレスは画面に出さない）
   function renderContact(d) {
-    var mail = (d.info || {})['メールアドレス'];
-    if (!mail || !/^[^\s@<>"'()]+@[^\s@<>"'()]+\.[^\s@<>"'()]+$/.test(mail)) return;
+    var info = d.info || {};
     var a = $('mailLink');
-    a.textContent = mail;
-    a.setAttribute('href', 'mailto:' + mail);
+    var form = safeUrl(info['お問い合わせフォームURL']);
+    var mail = info['メールアドレス'];
+    if (form) {
+      a.textContent = 'お問い合わせフォーム';
+      a.setAttribute('href', form);
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener');
+    } else if (mail && /^[^\s@<>"'()]+@[^\s@<>"'()]+\.[^\s@<>"'()]+$/.test(mail)) {
+      a.textContent = 'メールで問い合わせる';
+      a.setAttribute('href', 'mailto:' + mail);
+    } else {
+      return;
+    }
     $('contact').hidden = false;
   }
 
