@@ -43,7 +43,9 @@ a { color: var(--green); }
 .menu { display: flex; gap: 22px; align-items: center; }
 .menu a { color: var(--ink); text-decoration: none; font-size: .92rem; }
 .menu a:hover { color: var(--green); }
-.nav-sns { display: flex; gap: 6px; align-items: center; margin-left: 18px; }
+.nav-sns { display: flex; gap: 6px; align-items: center; margin-left: 18px; order: 3; }
+.menu { order: 2; }
+.menu-btn { order: 4; }
 .nav-sns a, .f-sns a { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
 .nav-sns a { width: 36px; height: 36px; border-radius: 50%; }
 .nav-sns a:hover { background: var(--green-l); }
