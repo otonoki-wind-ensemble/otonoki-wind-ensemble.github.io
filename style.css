@@ -118,7 +118,7 @@ a { color: var(--green); }
 .hero-parts { margin: 16px auto 0; max-width: 520px; text-align: left; }
 .hero-parts .lbl { font-size: .8rem; opacity: .9; margin: 0 0 6px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
-.chip { background: rgba(255, 255, 255, .18); border: 1px solid rgba(255, 255, 255, .6); color: #fff; border-radius: 999px; padding: 3px 14px; font-size: .88rem; text-decoration: none; }
+.chip { background: var(--green); border: 1px solid rgba(255, 255, 255, .75); color: #fff; border-radius: 999px; padding: 3px 14px; font-size: .88rem; text-decoration: none; }
 .chip.hot { background: var(--hot); border-color: var(--hot); }
 
 /* ---------- 数字 ---------- */

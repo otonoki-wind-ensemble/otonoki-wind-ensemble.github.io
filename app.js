@@ -154,7 +154,7 @@
       var n = d.next;
       var box = $('heroNext');
       clear(box);
-      box.appendChild(el('p', { class: 'lbl', text: '次回の本番' }));
+      box.appendChild(el('p', { class: 'lbl', text: '次回の演奏会' }));
       box.appendChild(el('p', { class: 'nm', text: n.name }));
       box.appendChild(el('p', { class: 'dt', text: n.date + timeText(n) }));
       box.appendChild(el('p', { class: 'dt', text: n.venue }));
@@ -178,6 +178,7 @@
 
   function timeText(c) {
     var t = [c.open && '開場 ' + c.open, c.start && '開演 ' + c.start].filter(Boolean).join('／');
+    if (c.end) t += '（' + c.end + '終演予定）';
     return t ? '　' + t : '';
   }
 
@@ -228,13 +229,13 @@
     var badge = { '急募': 'badge hot', '募集中': 'badge', '募集停止': 'badge off' };
     var head = ['パート', '状況', '募集'].concat(hasMembers ? ['在籍'] : [], ['条件'], hasNote ? ['備考'] : []);
     var thead = el('thead', {}, [el('tr', {}, head.map(function (h, i) {
-      return el('th', { class: i === 0 ? 'stick' : null, scope: 'col', text: h });
+      return el('th', { scope: 'col', text: h });
     }))]);
     var tbody = el('tbody');
     parts.forEach(function (p) {
       var stop = p.status === '募集停止';
       var cells = [
-        el('th', { class: 'stick', scope: 'row', text: p.part }),
+        el('th', { scope: 'row', text: p.part }),
         el('td', {}, [el('span', { class: badge[p.status] || 'badge', text: p.status })]),
         el('td', { class: 'num', text: stop ? '—' : (p.count ? p.count + '名' : '若干名') }),
       ];
@@ -288,7 +289,6 @@
     else right.appendChild(el('p', { class: 'muted', text: '曲目は決まり次第お知らせします。' }));
     var fl = flyerNode(n);
     box.appendChild(el('div', { class: 'concert-card ' + n.kind }, [
-      el('p', { class: badgeClass(n.kind), text: n.type }),
       el('h4', { class: 'c-name', text: n.name }),
       el('div', { class: 'c-body' + (fl ? '' : ' noflyer') }, [fl, right]),
     ]));
