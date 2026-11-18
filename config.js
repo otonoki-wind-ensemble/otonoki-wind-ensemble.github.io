@@ -5,6 +5,6 @@
  * heroImage … トップの背景写真（images フォルダに置いたファイル名）。使わないなら ''
  */
 window.OTONOKI_CONFIG = {
-  dataUrl: '',
+  dataUrl: 'https://script.google.com/macros/s/AKfycbxFtP8vqbeyeMrZvym4MmvG5Ea7epWqs_NS2bobFnamkKdf9RPOHHKv6pMD69WOMziM-w/exec',
   heroImage: '',
 };
