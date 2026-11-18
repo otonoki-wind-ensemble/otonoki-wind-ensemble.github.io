@@ -6,5 +6,5 @@
  */
 window.OTONOKI_CONFIG = {
   dataUrl: 'https://script.google.com/macros/s/AKfycbxFtP8vqbeyeMrZvym4MmvG5Ea7epWqs_NS2bobFnamkKdf9RPOHHKv6pMD69WOMziM-w/exec',
-  heroImage: '',
+  heroImage: 'hero.jpeg',
 };
