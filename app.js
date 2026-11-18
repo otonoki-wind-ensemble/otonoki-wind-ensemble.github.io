@@ -114,10 +114,12 @@
     $('statusText').textContent = msg;
   }
 
+  var PAST_SHOW = 5; // 過去の演奏会を最初に見せる件数（新しい順）
+
   /* ---------- 表示 ---------- */
   function render(d) {
     var tasks = [renderInfo, renderInfoGroups, renderContact, renderLinks, renderHero, renderStats, renderHistory, renderVoices,
-      renderParts, renderNext, renderPast, renderVideo, renderGallery, renderFaq, renderFooter];
+      renderParts, renderNext, renderPast, renderVideo, renderGallery, renderFaq, renderFooter, renderHeadings];
     tasks.forEach(function (fn) {
       try { fn(d); } catch (e) { if (window.console) console.warn('音ノ樹HP: 表示エラー', fn.name, e); }
     });
@@ -209,7 +211,7 @@
       var n = d.next;
       var box = $('heroNext');
       clear(box);
-      box.appendChild(el('p', { class: 'lbl', text: '次回の演奏会' }));
+      box.appendChild(el('p', { class: 'lbl', text: headingTitle(d, 'concerts-next', '次回の演奏会') }));
       box.appendChild(el('p', { class: 'nm', text: n.name }));
       box.appendChild(el('p', { class: 'dt', text: n.date + timeText(n) }));
       box.appendChild(el('p', { class: 'dt', text: n.venue }));
@@ -364,7 +366,7 @@
     clear(box);
     var past = d.past || [];
     if (!past.length) { box.appendChild(el('p', { class: 'muted', text: 'まだありません。' })); return; }
-    past.forEach(function (c) {
+    past.forEach(function (c, i) {
       var meta = [c.date, c.venue, c.audience ? '来場 ' + c.audience + '名' : ''].filter(Boolean).join('　');
       var fl = flyerNode(c);
       var body = el('div', { class: 'pbody' }, [
@@ -383,8 +385,27 @@
           if (top < 0) window.scrollBy(0, top - 70);
         }
       });
+      if (i >= PAST_SHOW) det.hidden = true;   // 6件目以降は「もっと見る」で開く
       box.appendChild(det);
     });
+    // 件数が多いときは、最新の数件だけ見せて「もっと見る」
+    var line = $('pastMoreLine'), btn = $('pastMore');
+    var rest = past.length - PAST_SHOW;
+    if (rest > 0) {
+      var open = false;
+      var label = function () { btn.textContent = open ? '閉じる' : 'すべて見る（あと' + rest + '件）'; };
+      label();
+      line.hidden = false;
+      btn.onclick = function () {
+        open = !open;
+        Array.prototype.forEach.call(box.children, function (det, i) { if (i >= PAST_SHOW) det.hidden = !open; });
+        label();
+        if (!open) {   // 閉じたら一覧の頭に戻る
+          var top = box.getBoundingClientRect().top;
+          if (top < 0) window.scrollBy(0, top - 80);
+        }
+      };
+    }
   }
 
   // トップの演奏動画：複数あれば横に切り替えるカルーセル（自動で順番に切り替わる）
@@ -508,6 +529,32 @@
       var p = el('p');
       setMultiline(p, f.a);
       box.appendChild(el('details', {}, [el('summary', { text: f.q }), p]));
+    });
+  }
+
+  function headingTitle(d, id, fallback) {
+    var h = d.headings && d.headings.items && d.headings.items[id];
+    return (h && h.title) || fallback;
+  }
+
+  // 見出し：シートの「見出し」タブの名前を、各セクションとメニューに反映（同じ名前になる）
+  function renderHeadings(d) {
+    var items = (d.headings && d.headings.items) || {};
+    document.querySelectorAll('[data-heading]').forEach(function (node) {
+      var h = items[node.getAttribute('data-heading')];
+      if (!h) return;
+      clear(node);
+      if (h.en) node.appendChild(el('span', { class: 'en', text: h.en }));
+      node.appendChild(document.createTextNode(h.title));
+    });
+    var menuIds = d.headings && d.headings.menu;
+    if (!menuIds || !menuIds.length) return;
+    var menu = $('menu'), cta = menu.querySelector('.cta-link');
+    Array.prototype.slice.call(menu.querySelectorAll('a:not(.cta-link)')).forEach(function (a) { menu.removeChild(a); });
+    menuIds.forEach(function (id) {
+      var sec = $(id);
+      if (!sec || sec.hidden || !items[id]) return;   // 表示していないセクションはメニューに出さない
+      menu.insertBefore(el('a', { href: '#' + id, text: items[id].title }), cta);
     });
   }
 

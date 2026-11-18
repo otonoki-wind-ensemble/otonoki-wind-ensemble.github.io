@@ -14,7 +14,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https: data:; frame-src https://www.youtube-nocookie.com; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'self'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" href="images/favicon.png">
-<link rel="stylesheet" href="style.css?v=20261119c">
+<link rel="stylesheet" href="style.css?v=20261119f">
 </head>
 <body>
 
@@ -26,8 +26,8 @@
     <nav class="menu" id="menu">
       <a href="#about">音ノ樹について</a>
       <a href="#history">音ノ樹のあゆみ</a>
-      <a href="#recruit">団員募集</a>
-      <a href="#concerts">演奏会</a>
+      <a href="#recruit">団員募集・見学</a>
+      <a href="#concerts">演奏会情報</a>
       <a href="#faq">よくある質問</a>
       <a href="#contact">お問い合わせ</a>
       <a class="btn btn-sm cta-link" href="#recruit" data-form-link>見学を申し込む</a>
@@ -63,7 +63,7 @@
 <!-- 音ノ樹について -->
 <section class="data sec" id="about">
   <div class="sec-in">
-    <h2 class="sec-title"><span class="en">About</span>音ノ樹について</h2>
+    <h2 class="sec-title" data-heading="about"><span class="en">About</span>音ノ樹について</h2>
     <p class="intro" data-info="紹介文"></p>
 
     <h3 class="sub-title" data-label="理念">大切にしていること</h3>
@@ -84,7 +84,7 @@
 <!-- 動画 -->
 <section class="sec sec-dark" id="video" hidden>
   <div class="sec-in">
-    <h2 class="sec-title light"><span class="en">Movie</span>演奏動画</h2>
+    <h2 class="sec-title light" data-heading="video"><span class="en">Movie</span>演奏動画</h2>
     <div class="carousel" id="videoBox" aria-roledescription="carousel" aria-label="演奏動画"></div>
   </div>
 </section>
@@ -92,7 +92,7 @@
 <!-- あゆみ -->
 <section class="data sec sec-tint" id="history">
   <div class="sec-in">
-    <h2 class="sec-title"><span class="en">History</span>音ノ樹のあゆみ</h2>
+    <h2 class="sec-title" data-heading="history"><span class="en">History</span>音ノ樹のあゆみ</h2>
     <ol class="timeline" id="timeline"></ol>
   </div>
 </section>
@@ -100,7 +100,7 @@
 <!-- 団員の声 -->
 <section class="sec" id="voices" hidden>
   <div class="sec-in">
-    <h2 class="sec-title"><span class="en">Voices</span>団員の声</h2>
+    <h2 class="sec-title" data-heading="voices"><span class="en">Voices</span>団員の声</h2>
     <div class="voices" id="voiceList"></div>
   </div>
 </section>
@@ -108,9 +108,9 @@
 <!-- 団員募集 -->
 <section class="data sec sec-tint" id="recruit">
   <div class="sec-in">
-    <h2 class="sec-title"><span class="en">Join us</span>団員募集・見学</h2>
+    <h2 class="sec-title" data-heading="recruit"><span class="en">Join us</span>団員募集・見学</h2>
 
-    <h3 class="sub-title">募集状況</h3>
+    <h3 class="sub-title" data-heading="recruit-status">募集状況</h3>
     <div class="table-wrap" id="partsWrap">
     </div>
     <p class="scroll-hint" id="partsHint" hidden>← 表は横にスクロールできます →</p>
@@ -130,13 +130,14 @@
 <!-- 演奏会 -->
 <section class="data sec" id="concerts">
   <div class="sec-in">
-    <h2 class="sec-title"><span class="en">Concerts</span>演奏会・出演情報</h2>
-    <h3 class="sub-title">次回の演奏会</h3>
+    <h2 class="sec-title" data-heading="concerts"><span class="en">Concerts</span>演奏会情報</h2>
+    <h3 class="sub-title" data-heading="concerts-next">次回の演奏会</h3>
     <div id="nextConcert">
     </div>
     <div id="upcoming"></div>
-    <h3 class="sub-title">過去の演奏会</h3>
+    <h3 class="sub-title" data-heading="concerts-past">過去の演奏会</h3>
     <div class="past" id="pastList"></div>
+    <p class="center" id="pastMoreLine" hidden><button class="btn btn-outline" type="button" id="pastMore"></button></p>
     <p class="center" id="ytLine" hidden><a class="btn btn-outline" id="ytLink" href="#" target="_blank" rel="noopener">YouTubeで演奏動画を見る</a></p>
   </div>
 </section>
@@ -144,7 +145,7 @@
 <!-- 写真 -->
 <section class="sec sec-tint" id="gallery" hidden>
   <div class="sec-in">
-    <h2 class="sec-title"><span class="en">Gallery</span>活動の様子</h2>
+    <h2 class="sec-title" data-heading="gallery"><span class="en">Gallery</span>活動の様子</h2>
     <div class="gallery" id="galleryList"></div>
   </div>
 </section>
@@ -152,7 +153,7 @@
 <!-- FAQ -->
 <section class="data sec" id="faq">
   <div class="sec-in">
-    <h2 class="sec-title"><span class="en">FAQ</span>よくある質問</h2>
+    <h2 class="sec-title" data-heading="faq"><span class="en">FAQ</span>よくある質問</h2>
     <div class="faq" id="faqList">
     </div>
     <div class="cta-box">
@@ -164,7 +165,7 @@
 <!-- お問い合わせ -->
 <section class="data sec sec-tint" id="contact" hidden>
   <div class="sec-in">
-    <h2 class="sec-title"><span class="en">Contact</span>お問い合わせ</h2>
+    <h2 class="sec-title" data-heading="contact"><span class="en">Contact</span>お問い合わせ</h2>
     <p class="contact-text" data-info="お問い合わせの案内"></p>
     <p class="contact-mail"><a id="mailLink" href="#"></a></p>
   </div>
@@ -179,7 +180,7 @@
   <p class="f-copy">© 楽団 音ノ樹</p>
 </footer>
 
-<script src="config.js?v=20261119c"></script>
-<script src="app.js?v=20261119e"></script>
+<script src="config.js?v=20261119f"></script>
+<script src="app.js?v=20261119f"></script>
 </body>
 </html>
