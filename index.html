@@ -14,7 +14,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https: data:; frame-src https://www.youtube-nocookie.com; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'self'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" href="images/favicon.png">
-<link rel="stylesheet" href="style.css?v=20261119f">
+<link rel="stylesheet" href="style.css?v=20261119g">
 </head>
 <body>
 
@@ -113,7 +113,7 @@
     <h3 class="sub-title" data-heading="recruit-status">募集状況</h3>
     <div class="table-wrap" id="partsWrap">
     </div>
-    <p class="scroll-hint" id="partsHint" hidden>← 表は横にスクロールできます →</p>
+    <p class="note" data-info="募集状況の注記"></p>
 
     <h3 class="sub-title" data-label="歓迎する方">こんな方を歓迎します</h3>
     <ul class="checks" data-info-list="歓迎する方"></ul>
@@ -137,7 +137,7 @@
     <div id="upcoming"></div>
     <h3 class="sub-title" data-heading="concerts-past">過去の演奏会</h3>
     <div class="past" id="pastList"></div>
-    <p class="center" id="pastMoreLine" hidden><button class="btn btn-outline" type="button" id="pastMore"></button></p>
+    <p id="pastMoreLine" hidden><button class="btn-toggle" type="button" id="pastMore" aria-expanded="false" aria-controls="pastList"></button></p>
     <p class="center" id="ytLine" hidden><a class="btn btn-outline" id="ytLink" href="#" target="_blank" rel="noopener">YouTubeで演奏動画を見る</a></p>
   </div>
 </section>
@@ -167,7 +167,7 @@
   <div class="sec-in">
     <h2 class="sec-title" data-heading="contact"><span class="en">Contact</span>お問い合わせ</h2>
     <p class="contact-text" data-info="お問い合わせの案内"></p>
-    <p class="contact-mail"><a id="mailLink" href="#"></a></p>
+    <p class="center"><a class="btn btn-outline" id="mailLink" href="#"></a></p>
   </div>
 </section>
 
@@ -180,7 +180,7 @@
   <p class="f-copy">© 楽団 音ノ樹</p>
 </footer>
 
-<script src="config.js?v=20261119f"></script>
-<script src="app.js?v=20261119f"></script>
+<script src="config.js?v=20261119g"></script>
+<script src="app.js?v=20261119g"></script>
 </body>
 </html>

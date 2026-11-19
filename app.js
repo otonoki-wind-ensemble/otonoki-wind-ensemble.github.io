@@ -225,8 +225,9 @@
       hp.appendChild(el('p', { class: 'lbl', text: '団員募集中のパート' }));
       var chips = el('div', { class: 'chips' });
       open.forEach(function (p) {
-        chips.appendChild(el('a', { class: 'chip' + (p.status === '急募' ? ' hot' : ''), href: '#recruit' },
-          [p.status === '急募' ? '急募 ' : '', p.part]));
+        var hot = p.status === '急募';
+        chips.appendChild(el('a', { class: 'chip' + (hot ? ' hot' : ''), href: '#recruit', title: hot ? '急募' : null },
+          [p.part, hot ? el('span', { class: 'sr-only', text: '（急募）' }) : null]));  // 色の違いだけで示す（読み上げでは「急募」と伝える）
       });
       hp.appendChild(chips);
       hp.hidden = false;
@@ -284,7 +285,7 @@
     var hasMembers = parts.some(function (p) { return p.members !== ''; });
     var hasNote = parts.some(function (p) { return p.note !== ''; });
     var badge = { '急募': 'badge hot', '募集中': 'badge', '募集停止': 'badge off' };
-    var head = ['パート', '状況', '募集'].concat(hasMembers ? ['在籍'] : [], ['条件'], hasNote ? ['備考'] : []);
+    var head = ['楽器', '状況', '募集'].concat(hasMembers ? ['在籍'] : [], ['条件'], hasNote ? ['備考'] : []);
     var thead = el('thead', {}, [el('tr', {}, head.map(function (h, i) {
       return el('th', { scope: 'col', text: h });
     }))]);
@@ -302,10 +303,6 @@
       tbody.appendChild(el('tr', { class: stop ? 'stopped' : null }, cells));
     });
     wrap.appendChild(el('table', { class: 'parts' }, [thead, tbody]));
-    var hint = $('partsHint');
-    var check = function () { hint.hidden = !(wrap.scrollWidth > wrap.clientWidth + 2); };
-    check();
-    window.addEventListener('resize', check);
   }
 
   function flyerNode(c) {
@@ -393,7 +390,10 @@
     var rest = past.length - PAST_SHOW;
     if (rest > 0) {
       var open = false;
-      var label = function () { btn.textContent = open ? '閉じる' : 'すべて見る（あと' + rest + '件）'; };
+      var label = function () {
+        btn.textContent = open ? '閉じる' : 'すべて見る（あと' + rest + '件）';
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      };
       label();
       line.hidden = false;
       btn.onclick = function () {
