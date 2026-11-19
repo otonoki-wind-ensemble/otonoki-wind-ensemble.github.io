@@ -408,7 +408,122 @@
     }
   }
 
-  // トップの演奏動画：複数あれば横に切り替えるカルーセル（自動で順番に切り替わる）
+  /* ---------- 横に流れる一覧（演奏動画・活動の様子で共通） ----------
+   * よく使われる良い作りに合わせる：
+   *  ・指でスワイプ／トラックパッドで横に動かせる（ボタンが無くても操作できる）
+   *  ・自動で次へ進むが、「一時停止」ボタンでいつでも止められる（WCAG 2.2.2）
+   *  ・マウスを乗せている間・キーボードで選んでいる間は止まる
+   *  ・指で触った・ボタンを押したなど、自分で操作したら自動送りはやめる
+   *  ・画面に見えていない間は進まない
+   *  ・端末の「視差効果を減らす（動きを減らす）」が有効なら、自動では動かさない
+   *  ・左右の ‹ › は、マウスで操作する端末だけに、目立たない透明な文字で出す
+   */
+  var REDUCE_MOTION = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  function makeScroller(box, track, opt) {
+    opt = opt || {};
+    var items = function () { return Array.prototype.slice.call(track.children); };
+    var current = 0, timer = null, stopped = false, hovering = false, focused = false, visible = true;
+    var onChange = opt.onChange || function () {};
+
+    // いま一番左（または中央）に来ているものの番号
+    function nearest() {
+      var x = track.scrollLeft, best = 0, bestD = Infinity;
+      items().forEach(function (it, i) {
+        var d = Math.abs(it.offsetLeft - x);
+        if (d < bestD) { bestD = d; best = i; }
+      });
+      return best;
+    }
+    function atEnd() { return track.scrollLeft + track.clientWidth >= track.scrollWidth - 4; }
+
+    function go(i, wrap) {
+      var list = items();
+      if (!list.length) return;
+      if (wrap && i >= list.length) i = 0;
+      if (wrap && i < 0) i = list.length - 1;
+      i = Math.max(0, Math.min(list.length - 1, i));
+      current = i;
+      track.scrollTo({ left: list[i].offsetLeft, behavior: REDUCE_MOTION ? 'auto' : 'smooth' });
+      onChange(current);
+    }
+    function next() {
+      // 最後まで見えていたら最初に戻る
+      if (atEnd()) go(0); else go(nearest() + 1);
+    }
+    function prev() {
+      if (track.scrollLeft <= 4) go(items().length - 1); else go(nearest() - 1);
+    }
+
+    var scrollTimer;
+    track.addEventListener('scroll', function () {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function () {
+        var i = nearest();
+        if (i !== current) { current = i; onChange(current); }
+      }, 120);
+    }, { passive: true });
+
+    // ---- 自動送り ----
+    var canAuto = !REDUCE_MOTION && items().length > 1;
+    var pauseBtn = null;
+    function scrollable() { return track.scrollWidth > track.clientWidth + 4; }
+    function tick() { if (!hovering && !focused && visible && scrollable()) next(); }
+    function start() { if (!stopped && canAuto && !timer) timer = setInterval(tick, opt.interval || 6000); }
+    // 全部が1画面に収まっているときは、‹ › と一時停止ボタンを隠す（写真の読み込み後・画面の幅が変わったときに見直す）
+    function refresh() {
+      var on = scrollable();
+      box.classList.toggle('is-static', !on);
+      if (pauseBtn) pauseBtn.hidden = !on;
+    }
+    window.addEventListener('resize', refresh);
+    function pause() { clearInterval(timer); timer = null; }
+    function stop() {
+      stopped = true; pause();
+      if (pauseBtn) { pauseBtn.setAttribute('aria-pressed', 'true'); pauseBtn.querySelector('.pp-label').textContent = '自動送りを再開'; }
+    }
+    function resume() {
+      stopped = false;
+      if (pauseBtn) { pauseBtn.setAttribute('aria-pressed', 'false'); pauseBtn.querySelector('.pp-label').textContent = '自動送りを一時停止'; }
+      start();
+    }
+
+    if (items().length > 1) {
+      // ‹ › （マウスの端末だけに出す。CSS で切り替え）
+      var pv = el('button', { class: 'c-nav c-prev', type: 'button', 'aria-label': opt.prevLabel || '前へ' }, ['‹']);
+      var nx = el('button', { class: 'c-nav c-next', type: 'button', 'aria-label': opt.nextLabel || '次へ' }, ['›']);
+      pv.addEventListener('click', function () { stop(); prev(); });
+      nx.addEventListener('click', function () { stop(); next(); });
+      box.appendChild(pv);
+      box.appendChild(nx);
+
+      box.addEventListener('mouseenter', function () { hovering = true; });
+      box.addEventListener('mouseleave', function () { hovering = false; });
+      box.addEventListener('focusin', function () { focused = true; });
+      box.addEventListener('focusout', function () { focused = false; });
+      // 指で触ったら、その人のペースで見てもらう（自動送りはやめる）
+      track.addEventListener('touchstart', function () { stop(); }, { passive: true });
+      track.addEventListener('wheel', function (e) { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) stop(); }, { passive: true });
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }, { threshold: 0.3 }).observe(track);
+      }
+    }
+
+    if (canAuto) {
+      pauseBtn = el('button', { class: 'c-pause', type: 'button', 'aria-pressed': 'false' }, [
+        el('span', { class: 'pp-icon', 'aria-hidden': 'true' }),
+        el('span', { class: 'pp-label', text: '自動送りを一時停止' }),
+      ]);
+      pauseBtn.addEventListener('click', function () { if (stopped) resume(); else stop(); });
+      start();
+    }
+    setTimeout(refresh, 0);
+
+    return { go: go, next: next, prev: prev, stop: stop, refresh: refresh, pauseBtn: pauseBtn };
+  }
+
+  // トップの演奏動画：1本ずつ横に切り替える
   function renderVideo(d) {
     var list = (d.topVideos && d.topVideos.length ? d.topVideos : (d.topVideo ? [d.topVideo] : []))
       .filter(function (v) { return v && /^[A-Za-z0-9_-]{11}$/.test(v.id); });
@@ -417,20 +532,20 @@
     clear(box);
     var track = el('div', { class: 'c-track' });
     var dots = el('div', { class: 'c-dots' });
-    var current = 0, timer = null, stopped = false;
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var sc;
 
     list.forEach(function (v, i) {
-      var slide = el('div', { class: 'c-slide', role: 'group', 'aria-label': (i + 1) + ' / ' + list.length });
+      var slide = el('div', { class: 'c-slide', role: 'group', 'aria-roledescription': 'slide', 'aria-label': (i + 1) + ' / ' + list.length });
       slide.appendChild(thumb(v, slide));
       track.appendChild(slide);
       if (list.length > 1) {
         var dot = el('button', { class: 'c-dot', type: 'button', 'aria-label': (i + 1) + '本目の動画へ' });
-        dot.addEventListener('click', function () { stopAuto(); go(i); });
+        dot.addEventListener('click', function () { sc.stop(); sc.go(i); });
         dots.appendChild(dot);
       }
     });
     box.appendChild(track);
+    $('video').hidden = false;   // 幅を測れるように、先に表示する
 
     // サムネイル（押すと再生）。ページを軽くするため、最初は画像だけ出す
     function thumb(v, slide) {
@@ -440,85 +555,145 @@
         v.title ? el('span', { class: 'c-title', text: v.title }) : null,
       ]);
       b.addEventListener('click', function () {
-        stopAuto();
+        if (sc) sc.stop();
         var src = 'https://www.youtube-nocookie.com/embed/' + v.id + '?autoplay=1' + (v.start ? '&start=' + parseInt(v.start, 10) : '');
         var frame = el('div', { class: 'frame' }, [el('iframe', {
           src: src, title: v.title, allowfullscreen: '',
           allow: 'autoplay; accelerometer; encrypted-media; gyroscope; picture-in-picture',
         })]);
-        frame.dataset.id = v.id;
         slide.replaceChild(frame, b);
         slide._video = v;
       });
       return b;
     }
 
-    // 再生中の動画を、別の動画に切り替えたら止める（サムネイルに戻す）
-    function resetOthers(keep) {
+    // 再生中の動画は、別の動画に切り替えたら止める（サムネイルに戻す）
+    function onChange(cur) {
+      Array.prototype.forEach.call(dots.children, function (dt, i) { dt.classList.toggle('on', i === cur); });
       Array.prototype.forEach.call(track.children, function (s, i) {
-        if (i !== keep && s._video) {
+        if (i !== cur && s._video) {
           var v = s._video; s._video = null;
           clear(s); s.appendChild(thumb(v, s));
         }
       });
     }
 
-    function go(i) {
-      current = (i + list.length) % list.length;
-      track.scrollTo({ left: track.clientWidth * current, behavior: reduce ? 'auto' : 'smooth' });
-      mark();
-    }
-    function mark() {
-      Array.prototype.forEach.call(dots.children, function (dt, i) { dt.classList.toggle('on', i === current); });
-      resetOthers(current);
-    }
-    var scrollTimer;
-    track.addEventListener('scroll', function () {
-      clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(function () {
-        var i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
-        if (i !== current) { current = i; mark(); }
-      }, 120);
-    });
-
-    function startAuto() {
-      if (stopped || reduce || list.length < 2 || timer) return;
-      timer = setInterval(function () { go(current + 1); }, 6000);
-    }
-    function pauseAuto() { clearInterval(timer); timer = null; }
-    function stopAuto() { stopped = true; pauseAuto(); }
-
+    sc = makeScroller(box, track, { interval: 6000, onChange: onChange, prevLabel: '前の動画', nextLabel: '次の動画' });
     if (list.length > 1) {
-      var prev = el('button', { class: 'c-nav c-prev', type: 'button', 'aria-label': '前の動画' }, ['‹']);
-      var next = el('button', { class: 'c-nav c-next', type: 'button', 'aria-label': '次の動画' }, ['›']);
-      prev.addEventListener('click', function () { stopAuto(); go(current - 1); });
-      next.addEventListener('click', function () { stopAuto(); go(current + 1); });
-      box.appendChild(prev);
-      box.appendChild(next);
-      box.appendChild(dots);
-      // 指やマウスが乗っている間は止める
-      box.addEventListener('mouseenter', pauseAuto);
-      box.addEventListener('mouseleave', startAuto);
-      track.addEventListener('touchstart', stopAuto, { passive: true });
-      mark();
-      startAuto();
+      var bar = el('div', { class: 'c-bar' }, [dots, sc.pauseBtn]);
+      box.appendChild(bar);
+      onChange(0);
     }
-    $('video').hidden = false;
   }
 
+  // 活動の様子：写真を元の形（縦長・横長）のまま横に並べ、ゆっくり自動で送る。タップで大きく表示
   function renderGallery(d) {
     if (!d.photos || !d.photos.length) return;
     var box = $('galleryList');
     clear(box);
+    var track = el('div', { class: 'g-track' });
+    var photos = [], sc = null;
     d.photos.forEach(function (p) {
-      if (!safeUrl(p.thumb)) return;
-      box.appendChild(el('figure', { style: null }, [
-        el('a', { href: safeUrl(p.full), target: '_blank', rel: 'noopener' }, [
-          el('img', { src: safeUrl(p.thumb), alt: p.caption || '活動の様子', loading: 'lazy', referrerpolicy: 'no-referrer' })]),
-        p.caption ? el('figcaption', { class: 'cap', text: p.caption }) : null,
-      ]));
+      var thumbUrl = safeUrl(p.thumb);
+      if (!thumbUrl) return;
+      var idx = photos.length;
+      photos.push({ thumb: thumbUrl, large: safeUrl(p.large) || thumbUrl, caption: p.caption || '' });
+      var img = el('img', { src: thumbUrl, alt: p.caption || '活動の様子', loading: idx < 3 ? 'eager' : 'lazy', referrerpolicy: 'no-referrer', decoding: 'async' });
+      img.addEventListener('load', function () { fig.classList.add('loaded'); if (sc) sc.refresh(); });
+      var btn = el('button', { class: 'g-open', type: 'button', 'aria-label': (p.caption || '写真') + ' を大きく表示' }, [img]);
+      btn.addEventListener('click', function () { sc.stop(); openLightbox(photos, idx, btn); });
+      var fig = el('figure', { class: 'g-item' }, [btn, p.caption ? el('figcaption', { class: 'g-cap', text: p.caption }) : null]);
+      track.appendChild(fig);
     });
-    $('gallery').hidden = !box.children.length;
+    if (!photos.length) return;
+    box.appendChild(track);
+    $('gallery').hidden = false;
+    sc = makeScroller(box, track, { interval: 4000, prevLabel: '前の写真', nextLabel: '次の写真' });
+    if (sc.pauseBtn) box.appendChild(el('div', { class: 'c-bar g-bar' }, [sc.pauseBtn]));
+  }
+
+  /* ---------- 写真を大きく見る画面（ライトボックス） ----------
+   * ・画面いっぱいに暗くして、写真だけを元の形のまま大きく表示
+   * ・閉じる：× ボタン／Esc キー／写真の外側をタップ／下にスワイプ
+   * ・前後の写真：‹ › ボタン／← → キー／左右にスワイプ
+   * ・「3 / 8」のように何枚目かを表示。説明があれば下に表示
+   * ・開いている間は、うしろのページが動かない。閉じたら元の写真に戻る
+   */
+  var LB = null;
+  function openLightbox(photos, index, opener) {
+    if (!LB) LB = buildLightbox();
+    LB.photos = photos; LB.opener = opener;
+    LB.show(index);
+    document.documentElement.classList.add('lb-open');
+    if (LB.dlg.showModal) LB.dlg.showModal(); else LB.dlg.setAttribute('open', '');
+    LB.closeBtn.focus();
+  }
+  function buildLightbox() {
+    var img = el('img', { class: 'lb-img', alt: '', referrerpolicy: 'no-referrer' });
+    var cap = el('p', { class: 'lb-cap' });
+    var count = el('p', { class: 'lb-count', 'aria-live': 'polite' });
+    var closeBtn = el('button', { class: 'lb-close', type: 'button', 'aria-label': '閉じる' }, ['×']);
+    var pv = el('button', { class: 'lb-nav lb-prev', type: 'button', 'aria-label': '前の写真' }, ['‹']);
+    var nx = el('button', { class: 'lb-nav lb-next', type: 'button', 'aria-label': '次の写真' }, ['›']);
+    var stage = el('div', { class: 'lb-stage' }, [img]);
+    var dlg = el('dialog', { class: 'lightbox', 'aria-label': '写真を大きく表示' }, [
+      el('div', { class: 'lb-top' }, [count, closeBtn]), stage, pv, nx, cap,
+    ]);
+    document.body.appendChild(dlg);
+    var lb = { dlg: dlg, closeBtn: closeBtn, photos: [], i: 0, opener: null };
+
+    lb.show = function (i) {
+      var n = lb.photos.length;
+      lb.i = (i + n) % n;
+      var p = lb.photos[lb.i];
+      // まず軽い画像を出し、大きい画像が届いたら差し替える
+      img.src = p.thumb;
+      img.alt = p.caption || '活動の様子';
+      if (p.large && p.large !== p.thumb) {
+        var big = new Image();
+        big.referrerPolicy = 'no-referrer';
+        big.onload = function () { if (lb.photos[lb.i] === p) img.src = p.large; };
+        big.src = p.large;
+      }
+      cap.textContent = p.caption || '';
+      cap.hidden = !p.caption;
+      count.textContent = n > 1 ? (lb.i + 1) + ' / ' + n : '';
+      pv.hidden = nx.hidden = n < 2;
+      // 前後の写真を先に読んでおく（めくったときに待たない）
+      [lb.i + 1, lb.i - 1].forEach(function (k) {
+        var q = lb.photos[(k + n) % n];
+        if (q && q.large) { var pre = new Image(); pre.referrerPolicy = 'no-referrer'; pre.src = q.large; }
+      });
+    };
+    function close() { if (dlg.open) { if (dlg.close) dlg.close(); else { dlg.removeAttribute('open'); onClosed(); } } }
+    function onClosed() {
+      document.documentElement.classList.remove('lb-open');
+      if (lb.opener) lb.opener.focus({ preventScroll: true });
+    }
+    dlg.addEventListener('close', onClosed);
+    closeBtn.addEventListener('click', close);
+    pv.addEventListener('click', function () { lb.show(lb.i - 1); });
+    nx.addEventListener('click', function () { lb.show(lb.i + 1); });
+    // 写真の外側（暗いところ）をタップしたら閉じる
+    dlg.addEventListener('click', function (e) { if (e.target === dlg || e.target === stage) close(); });
+    dlg.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); lb.show(lb.i - 1); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); lb.show(lb.i + 1); }
+    });
+    // スワイプ：左右でめくる、下で閉じる
+    var sx = 0, sy = 0, touching = false;
+    dlg.addEventListener('touchstart', function (e) {
+      if (e.touches.length !== 1) { touching = false; return; }   // 2本指（拡大）のときは何もしない
+      touching = true; sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    }, { passive: true });
+    dlg.addEventListener('touchend', function (e) {
+      if (!touching) return;
+      touching = false;
+      var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5 && lb.photos.length > 1) lb.show(lb.i + (dx < 0 ? 1 : -1));
+      else if (dy > 90 && Math.abs(dy) > Math.abs(dx) * 1.5) close();
+    }, { passive: true });
+    return lb;
   }
 
   function renderFaq(d) {
