@@ -78,16 +78,19 @@ a { color: var(--c-green); }
   backdrop-filter: blur(6px);
   border-bottom: 1px solid var(--c-line);
 }
-.nav-in { max-width: 1080px; margin: 0 auto; height: var(--navh); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+.nav-in { max-width: 1320px; margin: 0 auto; height: var(--navh); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+.brand { flex: 0 0 auto; margin-right: 32px; }   /* ロゴとメニューの間を空ける */
 .brand img { display: block; height: 40px; width: auto; }
-.menu { display: flex; gap: 22px; align-items: center; }
-.menu a { color: var(--c-ink); text-decoration: none; font-size: .92rem; }
+/* PCのメニュー：1項目を必ず1行に収める（途中で折り返さない） */
+.menu { display: flex; gap: clamp(12px, 1.25vw, 24px); align-items: center; margin-left: auto; }
+.menu a { color: var(--c-ink); text-decoration: none; font-size: .86rem; white-space: nowrap; }
+.menu .cta-link { margin-left: 6px; padding: 8px 16px; font-size: .84rem; }
 .menu a:hover { color: var(--c-green); }
-.nav-sns { display: flex; gap: 6px; align-items: center; margin-left: 18px; order: 3; }
+.nav-sns { display: flex; gap: 2px; align-items: center; margin-left: 16px; order: 3; flex: 0 0 auto; }
 .menu { order: 2; }
 .menu-btn { order: 4; }
 .nav-sns a, .f-sns a { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
-.nav-sns a { width: 36px; height: 36px; border-radius: 50%; }
+.nav-sns a { width: 34px; height: 34px; border-radius: 50%; }
 .nav-sns a:hover { background: var(--c-green-light); }
 .nav-sns img { width: 22px; height: 22px; object-fit: contain; }
 /* YouTube公式アイコンは画像の中に余白が多いので、少し大きく表示して見た目をそろえる */
@@ -95,7 +98,11 @@ a { color: var(--c-green); }
 .nav-sns a.text { width: auto; padding: 2px 10px; border: 1px solid var(--c-line); border-radius: 999px; font-size: .8rem; color: var(--c-ink); }
 .menu-btn { display: none; background: none; border: 0; width: 44px; height: 44px; padding: 10px; cursor: pointer; }
 .menu-btn span { display: block; height: 2px; background: var(--c-ink); margin: 6px 0; transition: .2s; }
-@media (max-width: 860px) {
+/* 幅が足りない画面（小さめのノートPC・タブレット）は、メニューを ≡ ボタンにまとめる */
+@media (max-width: 1200px) {
+  .brand { margin-right: 16px; }
+  .menu a { white-space: normal; font-size: .95rem; }
+  .menu .cta-link { margin-left: 20px; padding: 12px 20px; font-size: .95rem; }
   .nav-sns { margin-left: auto; margin-right: 4px; gap: 2px; }
   .menu-btn { display: block; }
   .menu {
