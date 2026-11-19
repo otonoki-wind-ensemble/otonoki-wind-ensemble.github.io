@@ -309,7 +309,9 @@ a.btn[target="_blank"]::after { content: "↗"; display: inline-block; margin-le
 .program { list-style: none; margin: 0; padding: 0; }
 .program li { padding: .45em 0; border-bottom: 1px dashed var(--c-line); }
 .program li:last-child { border-bottom: 0; }
-.program .by { display: block; font-size: .8rem; color: var(--c-gray-777); }
+.program .p-meta { display: flex; flex-wrap: wrap-reverse; align-items: center; gap: 4px 12px; margin-top: 2px; }   /* 入りきらないと、編成が上の行へ */
+.program .by { font-size: .8rem; color: var(--c-gray-777); min-width: 0; }
+.program .formation { flex: 0 0 auto; white-space: nowrap; font-size: .72rem; line-height: 1.5; padding: 0 8px; border: 1px solid var(--c-green); border-radius: 999px; color: var(--c-green-active); background: var(--c-white); }
 .program a { color: var(--c-ink); text-decoration: none; }
 .program a:hover .t { text-decoration: underline; }
 .yt { display: inline-block; margin-left: .5em; font-size: .72rem; color: var(--c-white); background: var(--c-toast-red); border-radius: 3px; padding: 0 6px; vertical-align: .12em; }

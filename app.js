@@ -325,7 +325,12 @@
       var title = u
         ? el('a', { href: u, target: '_blank', rel: 'noopener' }, [el('span', { class: 't', text: p.title }), el('span', { class: 'yt', text: '▶ 動画' })])
         : el('span', { text: p.title });
-      ul.appendChild(el('li', {}, [title, by ? el('span', { class: 'by', text: by }) : null]));
+      // 2行目：作曲・編曲と、アンサンブルの編成。横に入りきらないときは、編成が上の行に回る（CSSの wrap-reverse）
+      var meta = (by || p.formation) ? el('span', { class: 'p-meta' }, [
+        by ? el('span', { class: 'by', text: by }) : null,
+        p.formation ? el('span', { class: 'formation', text: p.formation }) : null,
+      ]) : null;
+      ul.appendChild(el('li', {}, [title, meta]));
     });
     return ul;
   }
