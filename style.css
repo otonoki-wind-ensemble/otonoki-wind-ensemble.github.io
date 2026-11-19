@@ -319,7 +319,7 @@ a.btn[target="_blank"]::after { content: "↗"; display: inline-block; margin-le
 .past summary::-webkit-details-marker { display: none; }
 .past summary::after { content: "＋"; margin-left: auto; color: var(--c-green); font-weight: bold; white-space: nowrap; flex: 0 0 auto; }
 .past details[open] summary { position: sticky; top: var(--navh); z-index: 5; background: var(--c-ivory); box-shadow: 0 1px 0 var(--c-line); }
-.past details[open] summary::after { content: "閉じる －"; font-size: .82rem; }
+.past details[open] summary::after { content: "－"; }   /* 開いているときは「－」だけ（よくある質問と同じ） */
 .past .pdate { font-size: .85rem; color: var(--c-gray-777); min-width: 6.5em; }
 .past .pname { font-weight: bold; }
 .past details.fest .pname { color: var(--c-ochre); }
