@@ -312,9 +312,15 @@
 
   function flyerNode(c) {
     if (!c.flyer || !safeUrl(c.flyer.thumb)) return null;
-    return el('a', { class: 'flyer', href: safeUrl(c.flyer.full), target: '_blank', rel: 'noopener' }, [
-      el('img', { src: safeUrl(c.flyer.thumb), alt: c.name + ' チラシ', loading: 'lazy', referrerpolicy: 'no-referrer' }),
+    // タップすると、活動の様子の写真と同じ画面（ライトボックス）で大きく表示する
+    var thumbUrl = safeUrl(c.flyer.thumb);
+    var btn = el('button', { class: 'flyer', type: 'button', 'aria-label': c.name + ' のチラシを大きく表示' }, [
+      el('img', { src: thumbUrl, alt: c.name + ' チラシ', loading: 'lazy', referrerpolicy: 'no-referrer' }),
     ]);
+    btn.addEventListener('click', function () {
+      openLightbox([{ thumb: thumbUrl, large: safeUrl(c.flyer.large) || thumbUrl, caption: c.name + ' チラシ' }], 0, btn);
+    });
+    return btn;
   }
 
   function programNode(list) {

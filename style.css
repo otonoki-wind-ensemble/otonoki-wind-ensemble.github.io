@@ -303,7 +303,7 @@ a.btn[target="_blank"]::after { content: "↗"; display: inline-block; margin-le
 .c-body { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: start; }
 .c-body.noflyer { grid-template-columns: 1fr; }
 @media (max-width: 640px) { .c-body { grid-template-columns: 1fr; } .c-body .flyer { max-width: 240px; margin: 0 auto; } }
-.flyer { display: block; }
+.flyer { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; font: inherit; }
 .flyer img { display: block; width: 100%; aspect-ratio: 1 / 1.414; object-fit: contain; background: var(--c-gray-eee); border-radius: 8px; box-shadow: 0 2px 8px var(--c-shadow-15); }
 .prog-title { font-weight: bold; color: var(--c-green-active); margin: 1em 0 .3em; font-size: .92rem; }
 .program { list-style: none; margin: 0; padding: 0; }
