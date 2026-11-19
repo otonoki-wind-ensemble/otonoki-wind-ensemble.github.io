@@ -213,7 +213,7 @@
       clear(box);
       box.appendChild(el('p', { class: 'lbl', text: headingTitle(d, 'concerts-next', '次回の演奏会') }));
       box.appendChild(el('p', { class: 'nm', text: n.name }));
-      box.appendChild(el('p', { class: 'dt', text: n.date + timeText(n) }));
+      box.appendChild(el('p', { class: 'dt' }, dateTimeNodes(n)));
       box.appendChild(el('p', { class: 'dt', text: n.venue }));
       box.appendChild(el('a', { href: '#concerts', text: '詳しく見る →' }));
       box.hidden = false;
@@ -234,10 +234,15 @@
     }
   }
 
+  // 日付の行と、時刻の行（開場／開演（終演））に分ける。時刻の行は途中で折り返さない
   function timeText(c) {
     var t = [c.open && '開場 ' + c.open, c.start && '開演 ' + c.start].filter(Boolean).join('／');
-    if (c.end) t += '（' + c.end + '終演予定）';
-    return t ? '　' + t : '';
+    if (c.end) t += '（' + c.end + '頃終演）';
+    return t;
+  }
+  function dateTimeNodes(c) {
+    var t = timeText(c);
+    return [el('span', { class: 'line', text: c.date }), t ? el('span', { class: 'line nowrap', text: t }) : null];
   }
 
   function renderStats(d) {
@@ -333,7 +338,7 @@
     if (!d.next) { box.appendChild(el('p', { class: 'muted', text: '決まり次第お知らせします。' })); return; }
     var n = d.next;
     var dl = el('dl', { class: 'dl' }, [
-      el('dt', { text: '日時' }), el('dd', { text: n.date + timeText(n) }),
+      el('dt', { text: '日時' }), el('dd', {}, dateTimeNodes(n)),
       el('dt', { text: '会場' }), el('dd', { text: n.venue }),
     ]);
     if (n.fee) { dl.appendChild(el('dt', { text: '入場料' })); dl.appendChild(el('dd', { text: n.fee })); }
@@ -364,10 +369,11 @@
     var past = d.past || [];
     if (!past.length) { box.appendChild(el('p', { class: 'muted', text: 'まだありません。' })); return; }
     past.forEach(function (c, i) {
-      var meta = [c.date, c.venue, c.audience ? '来場 ' + c.audience + '名' : ''].filter(Boolean).join('　');
+      // 1行目：日付、2行目：会場・来場者数（会場名の途中で折り返さないよう、会場から改行する）
+      var place = [c.venue, c.audience ? '来場 ' + c.audience + '名' : ''].filter(Boolean).join('　');
       var fl = flyerNode(c);
       var body = el('div', { class: 'pbody' }, [
-        el('p', { class: 'meta', text: meta }),
+        el('p', { class: 'meta' }, [c.date ? el('span', { class: 'line', text: c.date }) : null, place ? el('span', { class: 'line', text: place }) : null]),
         el('div', { class: 'c-body' + (fl ? '' : ' noflyer') }, [fl,
           c.program.length ? programNode(c.program) : el('p', { class: 'muted', text: '曲目は準備中です。' })]),
       ]);
