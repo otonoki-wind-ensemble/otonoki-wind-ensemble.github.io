@@ -478,13 +478,15 @@
     }
     window.addEventListener('resize', refresh);
     function pause() { clearInterval(timer); timer = null; }
-    function stop() {
-      stopped = true; pause();
-      if (pauseBtn) { pauseBtn.setAttribute('aria-pressed', 'true'); pauseBtn.querySelector('.pp-label').textContent = '自動送りを再開'; }
+    function setBtn() {
+      if (!pauseBtn) return;
+      pauseBtn.setAttribute('aria-pressed', stopped ? 'true' : 'false');
+      pauseBtn.setAttribute('aria-label', stopped ? '自動送りを再開' : '自動送りを一時停止');
     }
+    function stop() { stopped = true; pause(); setBtn(); }
     function resume() {
-      stopped = false;
-      if (pauseBtn) { pauseBtn.setAttribute('aria-pressed', 'false'); pauseBtn.querySelector('.pp-label').textContent = '自動送りを一時停止'; }
+      stopped = false; hovering = false; focused = false; setBtn();
+      next();          // 押したらすぐ1つ進めて、動き出したことが分かるようにする
       start();
     }
 
@@ -497,9 +499,12 @@
       box.appendChild(pv);
       box.appendChild(nx);
 
-      box.addEventListener('mouseenter', function () { hovering = true; });
-      box.addEventListener('mouseleave', function () { hovering = false; });
-      box.addEventListener('focusin', function () { focused = true; });
+      // マウスが乗っている間だけ止める（スマホのタップは「乗った」扱いにしない。
+      //  iPhone ではタップ後に「乗ったまま」と判定され、止まりっぱなしになるため）
+      box.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') hovering = true; });
+      box.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') hovering = false; });
+      // キーボードで中の項目を選んでいる間は止める（一時停止ボタン自体は除く）
+      box.addEventListener('focusin', function (e) { focused = !(e.target.classList && e.target.classList.contains('c-pause')); });
       box.addEventListener('focusout', function () { focused = false; });
       // 指で触ったら、その人のペースで見てもらう（自動送りはやめる）
       track.addEventListener('touchstart', function () { stop(); }, { passive: true });
@@ -511,9 +516,9 @@
     }
 
     if (canAuto) {
-      pauseBtn = el('button', { class: 'c-pause', type: 'button', 'aria-pressed': 'false' }, [
+      // 文字は出さず ⏸／▶ の印だけ（読み上げには「自動送りを一時停止／再開」と伝える）
+      pauseBtn = el('button', { class: 'c-pause', type: 'button', 'aria-pressed': 'false', 'aria-label': '自動送りを一時停止' }, [
         el('span', { class: 'pp-icon', 'aria-hidden': 'true' }),
-        el('span', { class: 'pp-label', text: '自動送りを一時停止' }),
       ]);
       pauseBtn.addEventListener('click', function () { if (stopped) resume(); else stop(); });
       start();
@@ -602,7 +607,8 @@
       img.addEventListener('load', function () { fig.classList.add('loaded'); if (sc) sc.refresh(); });
       var btn = el('button', { class: 'g-open', type: 'button', 'aria-label': (p.caption || '写真') + ' を大きく表示' }, [img]);
       btn.addEventListener('click', function () { sc.stop(); openLightbox(photos, idx, btn); });
-      var fig = el('figure', { class: 'g-item' }, [btn, p.caption ? el('figcaption', { class: 'g-cap', text: p.caption }) : null]);
+      // 説明文は一覧には出さず、大きく表示したときだけ見せる
+      var fig = el('figure', { class: 'g-item' }, [btn]);
       track.appendChild(fig);
     });
     if (!photos.length) return;
